@@ -21,6 +21,7 @@ func (p *Proxy) registerFwdAuthHandlers() http.Handler {
 	r.Use(func(h http.Handler) http.Handler {
 		return sessions.RetrieveSession(p.state.Load().sessionStore)(h)
 	})
+	r.Use(p.AuthenticateSession)
 	r.Use(p.jwtClaimMiddleware(true))
 
 	// NGNIX's forward-auth capabilities are split across two settings:
@@ -33,8 +34,8 @@ func (p *Proxy) registerFwdAuthHandlers() http.Handler {
 	r.Handle("/verify", httputil.HandlerFunc(p.nginxCallback)).
 		Queries("uri", "{uri}", urlutil.QuerySessionEncrypted, "", urlutil.QueryRedirectURI, "")
 
-	// nginx 1: verify. Return 401 if invalid and NGINX will call `auth-signin`
-	r.Handle("/verify", p.Verify(true)).Queries("uri", "{uri}")
+	// // nginx 1: verify. Return 401 if invalid and NGINX will call `auth-signin`
+	// r.Handle("/verify", p.Verify(true)).Queries("uri", "{uri}")
 
 	// nginx 4: redirect the user back to their originally requested location.
 	r.Handle("/", httputil.HandlerFunc(p.nginxPostCallbackRedirect)).
@@ -44,8 +45,8 @@ func (p *Proxy) registerFwdAuthHandlers() http.Handler {
 	r.Handle("/", httputil.HandlerFunc(p.forwardedURIHeaderCallback)).
 		HeadersRegexp(httputil.HeaderForwardedURI, urlutil.QuerySessionEncrypted)
 
-	// nginx 2 / traefik 1: verify and then start authenticate flow
-	r.Handle("/", p.Verify(false))
+	// // nginx 2 / traefik 1: verify and then start authenticate flow
+	// r.Handle("/", p.Verify(false))
 
 	return r
 }
