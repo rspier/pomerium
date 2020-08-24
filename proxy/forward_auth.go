@@ -21,7 +21,7 @@ func (p *Proxy) registerFwdAuthHandlers() http.Handler {
 	r.Use(func(h http.Handler) http.Handler {
 		return sessions.RetrieveSession(p.state.Load().sessionStore)(h)
 	})
-	r.Use(p.AuthenticateSession)
+
 	r.Use(p.jwtClaimMiddleware(true))
 
 	// NGNIX's forward-auth capabilities are split across two settings:
@@ -31,7 +31,7 @@ func (p *Proxy) registerFwdAuthHandlers() http.Handler {
 	// 		 to reason about so each step has a postfix order step.
 
 	// nginx 3: save the returned session post authenticate flow
-	r.Handle("/verify", httputil.HandlerFunc(p.nginxCallback)).
+	r.Handle("/", httputil.HandlerFunc(p.nginxCallback)).
 		Queries("uri", "{uri}", urlutil.QuerySessionEncrypted, "", urlutil.QueryRedirectURI, "")
 
 	// // nginx 1: verify. Return 401 if invalid and NGINX will call `auth-signin`

@@ -445,7 +445,7 @@ local PomeriumForwardAuthIngress = function() {
     name: 'pomerium-fa',
     annotations: {
       'kubernetes.io/ingress.class': 'nginx',
-      'nginx.ingress.kubernetes.io/auth-url': 'https://forward-authenticate.localhost.pomerium.io/verify?uri=$scheme://$host$request_uri',
+      'nginx.ingress.kubernetes.io/auth-url': 'https://forward-authenticate.localhost.pomerium.io/?uri=$scheme://$host$request_uri',
       'nginx.ingress.kubernetes.io/auth-signin': 'https://forward-authenticate.localhost.pomerium.io/?uri=$scheme://$host$request_uri',
       'nginx.ingress.kubernetes.io/proxy-buffer-size': '16k',
     },
