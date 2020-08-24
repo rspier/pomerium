@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.10.2
+
+### Fixed
+- autocert: fix locking issue @calebdoxsey GH-1310
+
 ## v0.10.1
 
 ### Changes
